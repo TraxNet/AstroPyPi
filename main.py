@@ -29,7 +29,7 @@ if __name__ == "__main__":
     #serial = i2c(port=1, address=args.port.i2c)
     #device = ssd1306(serial, rotate=0)
     #device = emulator(1, 2, 3, 'RGB', 'none', 6)
-    device = pygame()
+    device = pygame(96, 64)
 
     ui_client = luma_ui.LumaUserInterface(device)
 

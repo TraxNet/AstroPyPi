@@ -16,8 +16,12 @@ class GuidingGraph:
         self.points_ra.append(points_ra)
         self.points_dec.append(points_dec)
 
-    def render(self, canvas):
-        pass
+    def render(self, draw):
+        draw.line([(2, 30), (90, 30)], fill=(128, 128, 128))
+        draw.line([(2, 2), (2, 60)], fill=(255,255,255))
+
+
+
 
 class LumaUserInterface:
     def __init__(self, device):
