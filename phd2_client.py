@@ -30,7 +30,7 @@ class PHD2Status:
             return PHD2Status.Looping
 
 def phd2client_worker(client, host, port):
-    logging.info("Starting PHD2 Connection to " + host + ":" + port + "...")
+    logging.info("Starting PHD2 Connection to " + host + ":" + str(port) + "...")
     client_socket = phd2_socket.PH2Socket()
     client_socket.connect(host, port)
     logging.info("Connected")
