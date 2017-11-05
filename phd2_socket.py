@@ -2,6 +2,8 @@ import socket
 import json
 import logging
 
+logger = logging.getLogger('astropypi')
+
 class PH2Socket:
     '''demonstration class only
       - coded for clarity, not efficiency
@@ -19,8 +21,8 @@ class PH2Socket:
         self.sock.connect((host, port))
 
     def disconnect(self):
-        if self.socket:
-            self.sock.disconnect()
+        if self.sock:
+            self.sock.close()
 
     def send(self, msg):
         totalsent = 0
@@ -40,4 +42,4 @@ class PH2Socket:
         try:
             return json.loads(str_data)
         except ValueError:
-            logging.warning("Error parsing: " + str_data)
+            logger.warning("Error parsing: " + str_data)
