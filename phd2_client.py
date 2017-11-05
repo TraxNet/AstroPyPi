@@ -19,7 +19,10 @@ def status_str(val):
             return "Paused"
         elif val == PHD2Status.Looping:
             return "Looping"
-
+        elif val == PHD2Status.Guiding:
+            return "Guiding"
+        else:
+            return "Stopped"
 def status_parse(str_value):
     if str_value == "Stopped":
         return PHD2Status.Stopped
@@ -33,6 +36,10 @@ def status_parse(str_value):
         return PHD2Status.Paused
     elif str_value == "Looping":
         return PHD2Status.Looping
+    elif str_value == "Guiding":
+        return PHD2Status.Guiding
+    else:
+        return PHD2Status.Stopped
 
 class PHD2Status:
     Stopped = 0
@@ -120,14 +127,18 @@ class PHD2Client:
         self.add_point(self.to_arcsecs(guide_ra), self.to_arcsecs(guide_dec))
         self.ui.update_graph(self.guide_points_ra, self.guide_points_dec)
 
+        self.ui.update_snr(data[u'SNR'])
+
 
     def parse(self, data):
         if data is None:
             return
 
+        self.ui.update_snr(None)
+
         logger.info("PHD2 Event: " + str(data))
         if is_type(data, "AppState"):
-            self.ph2_status == status_parse(data["State"])
+            self.ph2_status = status_parse(data["State"])
         elif is_type(data, "StarLost"):
             self.ph2_status = PHD2Status.LostLock
         elif is_type(data, "Paused"):

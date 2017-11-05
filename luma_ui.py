@@ -65,16 +65,23 @@ class LumaUserInterface:
         self.alert_msg = None
         self.alert_time = 0.0
         self.alert_time_max = 5.0
-        self.font = make_font("tiny.ttf", 8)
+        self.font = make_font("tiny.ttf", 4)
+        self.snr = None
 
     def draw_status(self, draw):
-        draw.text((30, 2), text=phd2_client.status_str(self.status), font=self.font, fill="red")
+        draw.text((40, 2), text=phd2_client.status_str(self.status), font=self.font, fill="white")
+
+        if self.snr:
+            draw.text((40, 6), text="SNR: " + str(self.snr), font=self.font, fill="white")
+
+    def update_snr(self, snr_value):
+        self.snr = snr_value
 
     def update_graph(self, points_ra, points_dec):
         self.guiding_graph.update(points_ra, points_dec)
 
     def update_status(self, status):
-        pass
+        self.status = status
 
     def show_alert(self, message):
         pass
@@ -91,5 +98,4 @@ class LumaUserInterface:
 
         with canvas(self.device) as draw:
             self.guiding_graph.render(draw)
-
-        self.draw_status(draw)
+            self.draw_status(draw)
