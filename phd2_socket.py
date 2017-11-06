@@ -4,6 +4,7 @@ import logging
 
 logger = logging.getLogger('astropypi')
 
+
 class PH2Socket:
     '''demonstration class only
       - coded for clarity, not efficiency
@@ -23,14 +24,6 @@ class PH2Socket:
     def disconnect(self):
         if self.sock:
             self.sock.close()
-
-    def send(self, msg):
-        totalsent = 0
-        while totalsent < PH2Socket.MSGLEN:
-            sent = self.sock.send(msg[totalsent:])
-            if sent == 0:
-                raise RuntimeError("socket connection broken")
-            totalsent = totalsent + sent
 
     def receive(self):
         chunks = []

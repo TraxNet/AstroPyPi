@@ -6,6 +6,7 @@ from collections import deque
 
 logger = logging.getLogger('astropypi')
 
+
 def status_str(val):
         if val == PHD2Status.Stopped:
             return "Stopped"
@@ -21,8 +22,12 @@ def status_str(val):
             return "Looping"
         elif val == PHD2Status.Guiding:
             return "Guiding"
+        elif val == PHD2Status.Connecting:
+            return "Connecting"
         else:
             return "Stopped"
+
+
 def status_parse(str_value):
     if str_value == "Stopped":
         return PHD2Status.Stopped
@@ -41,6 +46,7 @@ def status_parse(str_value):
     else:
         return PHD2Status.Stopped
 
+
 class PHD2Status:
     Stopped = 0
     Selected = 1
@@ -49,6 +55,7 @@ class PHD2Status:
     LostLock = 4
     Paused = 5
     Looping = 6
+    Connecting = -1
 
 
 
@@ -57,12 +64,18 @@ class PHD2Status:
 def phd2client_worker(client, host, port):
     logger.info("Starting PHD2 Connection to " + host + ":" + str(port) + "...")
     client_socket = phd2_socket.PH2Socket()
-    client_socket.connect(host, port)
+    while True:
+        try:
+            client_socket.connect(host, port)
+        except:
+            logger.warning("Unable to connect. Retrying in 10secs...")
+            time.sleep(10)
+
     logger.info("Connected")
 
     while client.abort == False:
         try:
-            data = client_socket.receive()
+            data = client_socket.receive
             client.parse(data)
         except RuntimeError as e:
             logging.exception(e)
@@ -81,7 +94,7 @@ def shift(list, value):
 
 class PHD2Client:
     def __init__(self, host, port, ui, pixel_size_um, focal_len_mm):
-        self.ph2_status = PHD2Status.Stopped
+        self.ph2_status = PHD2Status.Connecting
         self.abort = False
         self.host = host
         self.port = port
@@ -89,17 +102,13 @@ class PHD2Client:
         self.ui = ui
         self.clear_points()
 
+        self.ui.update_status(self.ph2_status)
+
         self.pixel_size = pixel_size_um
         self.focal_len = focal_len_mm
 
 
     def add_point(self, value_ra, value_dec):
-        #if len(self.guide_points_ra) > self.ui.max_guide_points():
-        #    shift(self.guide_points_ra, value_ra)
-        #    shift(self.guide_points_dec, value_dec)
-        #else:
-        #    self.guide_points_ra.appendleft(value_ra)
-        #    self.guide_points_dec.appendleft(value_dec)
         self.guide_points_ra = [value_ra] + self.guide_points_ra
         self.guide_points_dec = [value_dec] + self.guide_points_dec
         self.guide_points_ra = self.guide_points_ra[:self.ui.max_guide_points()]
